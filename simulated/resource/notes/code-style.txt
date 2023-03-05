@@ -1,0 +1,2 @@
+No public fields, except in very simple classes or records. Especially not in parent or child classes, i.e. only in
+"final extends Object". Reason: Way too easy to confuse them with local variables -> bugs.

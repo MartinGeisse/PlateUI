@@ -10,7 +10,7 @@ public class PlateWindow extends JFrame {
     public static final int WIDTH = 200;
     public static final int HEIGHT = 200;
 
-    public final JPanel panel;
+    private final JPanel panel;
     private Widget gui;
 
     public PlateWindow() throws HeadlessException {
@@ -20,7 +20,7 @@ public class PlateWindow extends JFrame {
             @Override
             protected void paintComponent(Graphics g) {
                 if (gui != null) {
-                    gui.draw(g);
+                    gui.draw(new WidgetDrawContext(0, 0, WIDTH, HEIGHT, g));
                 }
             }
         };
@@ -48,8 +48,17 @@ public class PlateWindow extends JFrame {
 
     public void setGui(Widget gui) {
         this.gui = gui;
-        gui.updateLayout(0, 0, WIDTH, HEIGHT);
+        gui.layout(WIDTH, HEIGHT);
+        gui.setPosition(0, 0);
         repaint();
+    }
+
+    public JPanel getPanel() {
+        return panel;
+    }
+
+    public Widget getGui() {
+        return gui;
     }
 
 }

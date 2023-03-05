@@ -16,13 +16,8 @@ public class StrongSizer extends AbstractSizer {
     }
 
     @Override
-    public void updateLayout(int x, int y, int outerWidth, int outerHeight) {
-        int preferredWidth = getPreferredWidth();
-        int effectivePreferredWidth = preferredWidth < 0 ? outerWidth : preferredWidth;
-        int preferredHeight = getPreferredHeight();
-        int effectivePreferredHeight = preferredHeight < 0 ? outerHeight : preferredHeight;
-        getChild().updateLayout(x, y, effectivePreferredWidth, effectivePreferredHeight);
-        setLayout(x, y, width, height);
+    protected void adjustSizerSize(int effectivePreferredWidth, int effectivePreferredHeight) {
+        setSize(effectivePreferredWidth, effectivePreferredHeight);
     }
 
 }

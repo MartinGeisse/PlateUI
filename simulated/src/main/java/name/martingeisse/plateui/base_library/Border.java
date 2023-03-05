@@ -1,6 +1,7 @@
 package name.martingeisse.plateui.base_library;
 
 import name.martingeisse.plateui.core.Widget;
+import name.martingeisse.plateui.core.WidgetDrawContext;
 
 import java.awt.*;
 
@@ -17,14 +18,18 @@ public class Border extends Wrapper {
     }
 
     @Override
-    public void updateLayout(int x, int y, int width, int height) {
+    public void layout(int availableWidth, int availableHeight) {
         Widget child = getChild();
-        getChild().updateLayout(x + thickness, y + thickness, width - 2 * thickness, height - 2 * thickness);
-        setLayout(x, y, child.width + 2 * thickness, child.height + 2 * thickness);
+        child.layout(availableWidth - 2 * thickness, availableHeight - 2 * thickness);
+        child.setPosition(thickness, thickness);
+        setSize(child.getWidth() + 2 * thickness, child.getHeight() + 2 * thickness);
     }
 
     @Override
-    public void draw(Graphics g) {
+    public void draw(WidgetDrawContext context) {
+        drawChild(context);
+        int x = getX(), y = getY(), width = getWidth(), height = getHeight();
+        Graphics g = context.getGraphics();
         g.setColor(color);
         for (int i = 0; i < thickness; i++) {
             g.setColor(style.getTopLeftColor(color));

@@ -15,8 +15,9 @@ public class WeakSizer extends AbstractSizer {
     }
 
     @Override
-    public void updateLayout(int x, int y, int width, int height) {
-        suggestLayoutToChildButAcceptOverride(x, y, getPreferredWidth(), getPreferredHeight());
+    protected void adjustSizerSize(int effectivePreferredWidth, int effectivePreferredHeight) {
+        Widget child = getChild();
+        setSize(child.getWidth(), child.getHeight());
     }
 
 }

@@ -1,24 +1,57 @@
 package name.martingeisse.plateui.core;
 
-import java.awt.*;
-
 public abstract class Widget {
 
-    public int x, y, width, height;
+    private int x, y, width, height;
 
-    protected final void setLayout(int x, int y, int width, int height) {
+    public final void setPosition(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+
+    public final void setSize(int width, int height) {
         this.width = width;
         this.height = height;
     }
 
-    /**
-     * Subclasses will typically override this method and first call the super (this) implementation, then adjust
-     * the layout according to their own behavior. A subclass which doesn't override this method will just fill all
-     * available space.
-     */
-    public abstract void updateLayout(int x, int y, int width, int height);
+    public final int getX() {
+        return x;
+    }
 
-    public abstract void draw(Graphics g);
+    public final void setX(int x) {
+        this.x = x;
+    }
+
+    public final int getY() {
+        return y;
+    }
+
+    public final void setY(int y) {
+        this.y = y;
+    }
+
+    public final int getWidth() {
+        return width;
+    }
+
+    public final void setWidth(int width) {
+        this.width = width;
+    }
+
+    public final int getHeight() {
+        return height;
+    }
+
+    public final void setHeight(int height) {
+        this.height = height;
+    }
+
+    /**
+     * Should set the width and height of this widget, call layout() on all children,
+     * and set the position of all children. Should NOT set the position of this widget
+     * itself, because that is done by its parent.
+     */
+    public abstract void layout(int availableWidth, int availableHeight);
+
+    public abstract void draw(WidgetDrawContext context);
 }

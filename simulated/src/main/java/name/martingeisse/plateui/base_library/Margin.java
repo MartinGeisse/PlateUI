@@ -1,6 +1,7 @@
 package name.martingeisse.plateui.base_library;
 
 import name.martingeisse.plateui.core.Widget;
+import name.martingeisse.plateui.core.WidgetDrawContext;
 
 public class Margin extends Wrapper {
     private final int top, bottom, left, right;
@@ -18,10 +19,16 @@ public class Margin extends Wrapper {
     }
 
     @Override
-    public void updateLayout(int x, int y, int width, int height) {
+    public void layout(int availableWidth, int availableHeight) {
         Widget child = getChild();
-        getChild().updateLayout(x + left, y + top, width - left - right, height - top - bottom);
-        setLayout(x, y, child.width + left + right, child.height + top + bottom);
+        child.layout(availableWidth - left - right, availableHeight - top - bottom);
+        child.setPosition(left, top);
+        setSize(child.getWidth() + left + right, child.getHeight() + top + bottom);
+    }
+
+    @Override
+    public void draw(WidgetDrawContext context) {
+        drawChild(context);
     }
 
 }

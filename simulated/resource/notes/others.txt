@@ -1,0 +1,5 @@
+https://github.com/emilk/egui
+
+https://github.com/iced-rs/iced
+https://blog.logrocket.com/iced-rs-tutorial-rust-frontend-web-app/
+-> nur hw-accelerated. Wird als kompliziert.

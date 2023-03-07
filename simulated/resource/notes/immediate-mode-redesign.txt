@@ -1,0 +1,10 @@
+
+Idee:
+- immediate-mode GUI
+- kann X11, OpenGL, egui oder sonstwas als Backend benutzen
+
+Problem: Wie behandelt man State in Immediate-Mode GUIs?
+- so wie in react?
+- wie macht es egui?
+- ohne state handling keine wiederverwendbaren Komponenten; die Basiskomponenten gehen vielleicht "zufällig"
+    (z.B. Button geht, wenn man den PreviousMouseState mit übergibt), aber ohne Animation. Ist eher ein Hack.

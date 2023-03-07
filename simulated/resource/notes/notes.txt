@@ -1,0 +1,62 @@
+immediate-mode ist nicht so toll. Nur super-einfache GUIs gehen und das hier ist schon zu kompliziert.
+
+State lässt sich nicht gut behandeln. Was React macht, ist schon magic (außer man würde jedem Component-Element einen
+key geben, was man praktisch nicht macht), außerdem String-Keys statt uint32. State in den Components ist einfacher,
+aber dann können die Components auch nicht weggeworfen werden, sondern wegwerfen + neu erzeugen heißt dann sind es
+auch neue Komponenten. Darf also z.B. bei Ladedreher passieren, aber nicht bei tab-switching (state lost)
+
+Heißt auch: Button-Klick muss den Button verändern, und entweder macht man das durch Event-Downbubbling oder
+per mut-ref.
+
+Downbubbling bräuchte einen "Pfad" -> schlecht
+
+Fully-Qualified-Component-IDs bedeutet, man müsste die Components "flat" speichern. Recht großes Risiko, dass da
+beim Entfernen welche "übrig bleiben".
+
+Bei Animationen ist BTW auch die Gefahr, dass welche noch "weiterlaufen", obwohl die schon entfernt wurden.
+Gleiches bei z.B. Ladevorgängen. Ist im Prinzip wie bei React, mit useEffect() und returnedter Aufräumfunktion.
+
+Mut-Refs braucht Helper (RefCell?), damit es mehrere geben kann.
+
+FAZIT: Alles irgendwie Mist. Downbubbling wäre echt die beste Lösung.
+Was ist dafür nötig?
+- Zugriff auf Children, ohne die Struktur zu kennen (getChildren -> Array)
+- der Button muss seinen Pfad kennen (TODO, wird schwer)
+    - der ist dynamisch bekannt. Mausklick auf Button löst Animation aus -> beim Klick ist der Pfad durch das
+        Downbubbling des Klicks bekannt.
+    - ist nur Blöd, wenn sich der Pfad während der Animation ändert!
+->
+Besser wäre, eine Animation braucht keine gezielte Veränderung. Klick -> Animation installieren und danach verzögerter
+Redraw-Event, aber keine State-Änderung nötig (die Animationsdaten sind so strukturiert, dass das geht). Der
+Redraw kann dann global sein.
+-
+Anderes Beispiel als Animation: Klick auf den Button löst einen Ladevorgang aus und wenn fertig soll eine andere
+Komponente updated werden. -> pull up state -> aber angenommen dieser state ist dann nicht toplevel, und ist
+dummerweise ein Element in einer Liste von 1000.
+- man könnte trotzdem den ganzen Baum durchnudeln. Aber die Performance wäre meh.
+- eine global unique Id für die Komponente alleine reicht nicht. Ohne den Pfad muss man den ganzen Baum durchgehen.
+
+Ansatz: Pfade benutzen.
+- Der Pfad wird durch einen ByteArrayBuilder zusammengebaut, dadurch sind verschiedene id-Längen je Komponente möglich
+- Viele Komponenten sind teil-statisch: factory-function, danach ändert sich nichts mehr. Die können einen impliziten
+    ID-Counter benutzen.
+- Manche Komponenten können per visibility teil-statisch gemacht werden, z.B. Tabs  (dann behalten die auch ihren
+    state)
+- nur wirklich dynamische Komponenten gehen so nicht, und die müssen im Prinzip selbst die ID-re-use kontrollieren.
+- beim Hinzufügen einer Komponente zur GUI bekommt diese eine ID zugewiesen. Das ist im Prinzip der Pfad.
+    - soll der Pfad nur dynamisch bekannt sein? Das macht es komplizierter, aber dafür muss man ihn dann nicht
+        überall speichern.
+    - es muss jede Komponente in der Lage sein, einen Pfad aufzulösen.
+    - dynamisch den Pfad rekonstruieren ist nur bei Events (z.B. Klick nötig). Beim Zeichnen gibt es nichts, wofür
+        man den braucht.
+-->
+- es ist für die Performance vermutlich besser, den Pfad nur dynamisch zu kennen
+- für eine erste Version wäre es aber okay, den Pfad überall zu speichern und auch nur vereinfachte "localId: int32"
+    zu benutzen. Wichtiger ist, dass kein Code davon abhängig wird.
+- erste Version sind fast alle Komponenten mit final-Children, dadurch kann sich der Inhalt nicht ändern
+- erste Version sind fast alle Komponenten mit Children-Array und die Getter greifen per ID zu.
+    -> ID-assignment und Pfad-auflösen passiert automatisch in AbstractStaticWidget
+
+
+
+
